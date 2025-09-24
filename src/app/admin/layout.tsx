@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { IconHome, IconUsers, IconPackage, IconTool, IconLogOut } from "lucide-react";
+import { Home, Users, Package, Wrench, LogOut } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -15,17 +16,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <h1 className="text-xl font-semibold text-primary">TaskGo Admin</h1>
         </div>
         <nav className="px-4 space-y-1">
-          <SidebarLink href="/admin/dashboard" icon={<IconHome size={20} />}>
+          <SidebarLink href="/admin/dashboard" icon={<Home size={20} />}>
             Dashboard
           </SidebarLink>
-          <SidebarLink href="/admin/users" icon={<IconUsers size={20} />}>
-            Users
+          <SidebarLink href="/admin/users" icon={<Users size={20} />}>
+            Usuários
           </SidebarLink>
-          <SidebarLink href="/admin/products" icon={<IconPackage size={20} />}>
-            Products
+          <SidebarLink href="/admin/products" icon={<Package size={20} />}>
+            Produtos
           </SidebarLink>
-          <SidebarLink href="/admin/services" icon={<IconTool size={20} />}>
-            Services
+          <SidebarLink href="/admin/services" icon={<Wrench size={20} />}>
+            Serviços
           </SidebarLink>
         </nav>
         <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -33,8 +34,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             onClick={() => {}} 
             className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors w-full px-4 py-2 rounded-lg"
           >
-            <IconLogOut size={20} />
-            <span>Logout</span>
+            <LogOut size={20} />
+            <span>Sair</span>
           </button>
         </div>
       </aside>
