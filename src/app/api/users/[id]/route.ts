@@ -6,9 +6,11 @@ import { requireAdmin } from "@/lib/auth";
 import { pusher } from "@/lib/realtime";
 import { CHANNELS, EVENTS } from "@/lib/realtime";
 
+import { NextRequest } from "next/server";
+
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
     requireAdmin();
@@ -18,12 +20,12 @@ export async function PATCH(
     const updatedUser = await db
       .update(users)
       .set({ status })
-      .where(eq(users.id, params.id))
+      .where(eq(users.id, context.params.id))
       .returning();
 
     // Notify clients about the update
     await pusher.trigger(CHANNELS.USERS, EVENTS.USER_UPDATED, {
-      id: params.id,
+      id: context.params.id,
       status,
     });
 
@@ -37,8 +39,8 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: { id: string } }
 ) {
   try {
     requireAdmin();
@@ -46,7 +48,7 @@ export async function DELETE(
     const deletedUser = await db
       .update(users)
       .set({ deletedAt: new Date() })
-      .where(eq(users.id, params.id))
+      .where(eq(users.id, context.params.id))
       .returning();
 
     return NextResponse.json(deletedUser[0]);
