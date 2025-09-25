@@ -1,0 +1,117 @@
+import AdminLayout from "@/components/layout/admin-layout";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { db } from "@/lib/db";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+async function getTaskStats() {
+  const result = await db.query(`
+    SELECT 
+      COUNT(*) as total_tasks,
+      COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_tasks,
+      COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_tasks
+    FROM tasks
+  `);
+  
+  return result.rows[0];
+}
+
+async function getLastTasks() {
+  const result = await db.query(`
+    SELECT id, title, status, created_at, completed_at
+    FROM tasks
+    ORDER BY created_at DESC
+    LIMIT 5
+  `);
+  
+  return result.rows;
+}
+
+export default async function DashboardPage() {
+  const stats = await getTaskStats();
+  const lastTasks = await getLastTasks();
+
+  return (
+    <AdminLayout>
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-medium mb-2">Total de Tarefas</h3>
+              <p className="text-3xl font-bold">{stats.total_tasks}</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-medium mb-2">Tarefas Concluídas</h3>
+              <p className="text-3xl font-bold text-green-600">{stats.completed_tasks}</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <h3 className="text-lg font-medium mb-2">Tarefas Pendentes</h3>
+              <p className="text-3xl font-bold text-yellow-600">{stats.pending_tasks}</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <h3 className="text-lg font-medium">Estatísticas</h3>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span>Taxa de Conclusão:</span>
+                  <span className="font-medium">
+                    {Math.round((stats.completed_tasks / stats.total_tasks) * 100) || 0}%
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Tarefas em Andamento:</span>
+                  <span className="font-medium">{stats.pending_tasks}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <h3 className="text-lg font-medium">Últimas Tarefas</h3>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                {lastTasks.map((task) => (
+                  <div key={task.id} className="flex justify-between items-center">
+                    <div>
+                      <p className="font-medium">{task.title}</p>
+                      <p className="text-sm text-gray-500">
+                        {format(new Date(task.created_at), "dd/MM/yyyy HH:mm", {
+                          locale: ptBR,
+                        })}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        task.status === "completed"
+                          ? "bg-green-100 text-green-800"
+                          : "bg-yellow-100 text-yellow-800"
+                      }`}
+                    >
+                      {task.status === "completed" ? "Concluída" : "Pendente"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}
