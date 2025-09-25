@@ -1,6 +1,34 @@
 "use client";
 
-import {           <SidebarLink href="/admin/dashboard" icon={<HomeIcon size={20} />}>
+import { ReactNode } from "react";
+import Link from "next/link";
+import {
+  HomeIcon,
+  UsersIcon,
+  PackageIcon,
+  WrenchIcon,
+  LogOutIcon
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface AdminLayoutProps {
+  children: ReactNode;
+}
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  const handleLogout = async () => {
+    // Implementar logout
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200">
+        <div className="p-6">
+          <h1 className="text-xl font-semibold text-primary">TaskGo Admin</h1>
+        </div>
+        <nav className="px-4 space-y-1">
+          <SidebarLink href="/admin/dashboard" icon={<HomeIcon size={20} />}>
             Dashboard
           </SidebarLink>
           <SidebarLink href="/admin/users" icon={<UsersIcon size={20} />}>
@@ -18,50 +46,8 @@ import {           <SidebarLink href="/admin/dashboard" icon={<HomeIcon size={20
             onClick={handleLogout}
             className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full rounded-md"
           >
-            <LogOutIcon size={20} />eact";
-import Link from "next/link";
-import { 
-  HomeIcon, 
-  Users as UsersIcon, 
-  Package as PackageIcon, 
-  Wrench as WrenchIcon, 
-  LogOut as LogOutIcon 
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-
-interface AdminLayoutProps {
-  children: ReactNode;
-}
-
-export default function AdminLayout({ children }: AdminLayoutProps) {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Sidebar */}
-      <aside className="fixed left-0 top-0 h-full w-64 bg-white border-r border-gray-200">
-        <div className="p-6">
-          <h1 className="text-xl font-semibold text-primary">TaskGo Admin</h1>
-        </div>
-        <nav className="px-4 space-y-1">
-          <SidebarLink href="/admin/dashboard" icon={<Home size={20} />}>
-            Dashboard
-          </SidebarLink>
-          <SidebarLink href="/admin/users" icon={<Users size={20} />}>
-            Usuários
-          </SidebarLink>
-          <SidebarLink href="/admin/products" icon={<Package size={20} />}>
-            Produtos
-          </SidebarLink>
-          <SidebarLink href="/admin/services" icon={<Wrench size={20} />}>
-            Serviços
-          </SidebarLink>
-        </nav>
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <button 
-            onClick={() => {}} 
-            className="flex items-center space-x-2 text-gray-600 hover:text-primary transition-colors w-full px-4 py-2 rounded-lg"
-          >
-            <LogOut size={20} />
-            <span>Sair</span>
+            <LogOutIcon size={20} />
+            <span className="ml-3">Sair</span>
           </button>
         </div>
       </aside>
@@ -76,18 +62,21 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 interface SidebarLinkProps {
   href: string;
-  icon: ReactNode;
-  children: ReactNode;
+  icon: React.ReactNode;
+  children: React.ReactNode;
 }
 
 function SidebarLink({ href, icon, children }: SidebarLinkProps) {
   return (
     <Link
       href={href}
-      className="flex items-center space-x-2 text-gray-600 hover:text-primary hover:bg-gray-50 transition-colors px-4 py-2 rounded-lg"
+      className={cn(
+        "flex items-center px-4 py-2 text-sm font-medium rounded-md",
+        "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+      )}
     >
       {icon}
-      <span>{children}</span>
+      <span className="ml-3">{children}</span>
     </Link>
   );
 }
