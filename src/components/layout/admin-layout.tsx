@@ -1,8 +1,32 @@
 "use client";
 
-import { ReactNode } from "react";
+import {           <SidebarLink href="/admin/dashboard" icon={<HomeIcon size={20} />}>
+            Dashboard
+          </SidebarLink>
+          <SidebarLink href="/admin/users" icon={<UsersIcon size={20} />}>
+            Usuários
+          </SidebarLink>
+          <SidebarLink href="/admin/products" icon={<PackageIcon size={20} />}>
+            Produtos
+          </SidebarLink>
+          <SidebarLink href="/admin/services" icon={<WrenchIcon size={20} />}>
+            Serviços
+          </SidebarLink>
+        </nav>
+        <div className="absolute bottom-0 left-0 right-0 p-4">
+          <button
+            onClick={handleLogout}
+            className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full rounded-md"
+          >
+            <LogOutIcon size={20} />eact";
 import Link from "next/link";
-import { Home, Users, Package, Wrench, LogOut } from "lucide-react";
+import { 
+  HomeIcon, 
+  Users as UsersIcon, 
+  Package as PackageIcon, 
+  Wrench as WrenchIcon, 
+  LogOut as LogOutIcon 
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface AdminLayoutProps {
