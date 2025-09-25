@@ -1,5 +1,5 @@
 import { authenticate } from "@/lib/auth";
-import { cookies } from "next/headers";
+import { generateToken } from "@/lib/jwt";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -17,17 +17,23 @@ export async function POST(req: Request) {
     
     if (!isValid) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
+        { message: "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    // Set session cookie
-    const response = NextResponse.json({ success: true });
-    response.cookies.set("taskgo_session", "authenticated", {
+    const token = generateToken({ username });
+    
+    const response = NextResponse.json({ 
+      success: true, 
+      token 
+    });
+
+    response.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
+      path: "/",
       maxAge: 60 * 60 * 24, // 24 hours
     });
 

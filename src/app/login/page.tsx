@@ -1,38 +1,45 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [error, setError] = useState("");
-  
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+  async function handleLogin(formData: FormData) {
+    "use server";
+    
     const username = formData.get("username");
     const password = formData.get("password");
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch("http://localhost:3001/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
+        credentials: "include",
       });
 
-      if (response.ok) {
-        router.push("/admin/dashboard");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Invalid credentials");
+      }
+
+      // We'll let the API set the cookie and handle it
+      if (data.token) {
+        redirect("/admin/dashboard");
       } else {
-        const data = await response.json();
-        setError(data.error || "Invalid credentials");
+        throw new Error("No token received");
       }
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      redirect("/login?error=invalid");
     }
   }
+
+  const searchParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
+  const error = searchParams.get("error");
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -42,16 +49,16 @@ export default function LoginPage() {
             TaskGo Admin
           </h1>
           <p className="mt-2 text-sm text-center text-gray-600">
-            Enter your credentials to access the admin panel
+            Digite suas credenciais para acessar o painel
           </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form action={handleLogin} className="space-y-4">
             <div>
               <Input
                 name="username"
                 type="text"
-                placeholder="Username"
+                placeholder="Usuário"
                 required
                 className="w-full"
               />
@@ -60,16 +67,18 @@ export default function LoginPage() {
               <Input
                 name="password"
                 type="password"
-                placeholder="Password"
+                placeholder="Senha"
                 required
                 className="w-full"
               />
             </div>
-            {error && (
-              <p className="text-sm text-red-500 text-center">{error}</p>
+            {error === "invalid" && (
+              <p className="text-sm text-red-500 text-center">
+                Credenciais inválidas
+              </p>
             )}
             <Button type="submit" className="w-full">
-              Login
+              Entrar
             </Button>
           </form>
         </CardContent>
